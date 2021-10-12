@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projectile Motion</title>
+  <style>
+  #body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#controlPanel {
+    background-color: lightblue;
+    display: grid;
+    grid-auto-flow: column;
+    grid-column-gap: 10px;
+    align-items: center;
+    justify-content: center;
+    width: 1400px;
+    height: 70px;
+    font-size: 25px;
+}
+
+input, button, table{
+    font-size: 25px;
+}
+
+canvas,table{
+    width: auto;
+    height: a;
+    float: left;
+}
+
+table, tr, td {
+    border: 1px solid black;
+    margin-top: 15%;
+}
+
+
+#controlPanel, canvas{
+    border: 3px solid black;
+}
+  </style>
+</head>
+
+<body>
+
+  <canvas id="canvas" width="1400" height="800"></canvas>
+
+  <table>
+    <tr>
+      <th>Parameter</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Current X position (mater)</td>
+      <td id="xPosition"></td>
+    </tr>
+    <tr>
+      <td>Current Y position (mater)</td>
+      <td id="yPosition"></td>
+    </tr>
+    <tr>
+      <td>Range (mater)</td>
+      <td id="range"></td>
+    </tr>
+    <tr>
+      <td>Maximum height (mater)</td>
+      <td id="hmax"></td>
+    </tr>
+    <tr>
+      <td>Time (seconds)</td>
+      <td id="time"></td>
+    </tr>
+  </table>
+
+  <div id="controlPanel">
+    <label for="angle">Angle (°):</label>
+    <input id="angle" name="angle" type="number" max="90" min="0" value=30></input>
+    <label for="velocity">Velocity (m/s):</label>
+    <input id="velocity" name="velocity" type="number" value=120></input>
+    <button id="launch">Launch</button>
+    <button id="reset">Reset</button>
+    <label for="color">Projectile color:</label>
+    <input type="color" id="color" />
+  </div>
+
+
+</body>
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const launchBtn = document.getElementById("launch");
+const resetBtn = document.getElementById("reset");
+const colorEl = document.getElementById("color");
+
+// all props that is needed for the projectile. There will be no need for reset function.
+function projectileProps(v, radAngle) {
+  return {
+    x: 0,
+    y: 800,
+    oldX: 0,
+    oldY: 800,
+    vx: v * Math.cos(radAngle),
+    vy: -v * Math.sin(radAngle),
+    g: 9.81,
+  };
+}
+
+function drawProjectile(props) {
+  ctx.beginPath();
+  // to make the tail of the bullet
+  ctx.moveTo(props.x, props.y);
+  ctx.lineTo(props.oldX, props.oldY);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  props.oldX = props.x;
+  props.oldY = props.y;
+  ctx.arc(props.x, props.y, 5, 0, 2 * Math.PI);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function moveProjectile(props) {
+  // to make it stop i use If statement. Could use setInterval but if will do the work.
+  if (props.x <= 1400 && props.y <= 800) {
+    document.getElementById("xPosition").innerHTML = props.x.toFixed(3);
+    document.getElementById("yPosition").innerHTML = ((props.oldY - 800) *-1).toFixed(3);
+    console.log(props.x + " and y " + props.y);
+    props.x += props.vx/4; // the division is for make the dots close to each other.
+    props.y += props.vy/4;
+    props.vy += props.g/4;
+    drawProjectile(props);
+  // recall this function again.
+    window.setTimeout(function () {
+      moveProjectile(props);
+    }, 100);
+  } else if (props.x >= 1400){ 
+    // if the bullet move out side the canvas.
+    document.getElementById("xPosition").innerHTML = (" Waw! this is too far!");
+    resetBtn.disabled = false;
+  }else {
+    // to reset the reset btn.
+    resetBtn.disabled = false;
+  }
+  return;
+}
+
+launchBtn.addEventListener("click", function startDrawing() {
+  let v = document.getElementById("velocity").value;
+  let degreeAngle = document.getElementById("angle").value; // In degree.
+  let radAngle = (degreeAngle * Math.PI) / 180; // In rad because Sin and Cos is calculated using rad.
+  let props = projectileProps(v, radAngle);
+  moveProjectile(props);
+
+  // calculations in the parameters table:
+  const vxStat = v * Math.cos(radAngle);
+  const vyStat = v * Math.sin(radAngle);
+  const grav = 9.81;
+  const range = (2 * vxStat * vyStat) / grav;
+  const hmax = (vyStat * vyStat) / (2 * grav);
+  const time = (2 * vyStat) / grav;
+  document.getElementById("range").innerHTML = range.toFixed(3);
+  document.getElementById("hmax").innerHTML = hmax.toFixed(3);
+  document.getElementById("time").innerHTML = time.toFixed(3);
+  resetBtn.disabled = true;
+});
+
+resetBtn.addEventListener("click", function removeDrawing() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+colorEl.addEventListener("change", (e) => {
+  color = e.target.value;
+});
+</script>
+
+</html>
