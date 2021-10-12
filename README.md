@@ -1,6 +1,6 @@
 # Nagwa-Task-Projectile-Motion
 
-![](Nagwa-Task-Projectile-Motion/Screenshot from 2021-10-12 15-24-41.png)
+![The project demo](https://github.com/akiid777/Nagwa-Task-Projectile-Motion/blob/main/Screenshot%20from%202021-10-12%2015-24-41.png)
 
 ### This project intends to Simulate the projectile motion in the plan surface. you can: 
 
