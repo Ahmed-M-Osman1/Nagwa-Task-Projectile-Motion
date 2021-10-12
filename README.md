@@ -1,5 +1,7 @@
 # Nagwa-Task-Projectile-Motion
 
+![](Nagwa-Task-Projectile-Motion/Screenshot from 2021-10-12 15-24-41.png)
+
 ### This project intends to Simulate the projectile motion in the plan surface. you can: 
 
 1- Launch projectile as many as you can.
